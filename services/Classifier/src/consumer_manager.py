@@ -1,5 +1,5 @@
-from utils.configurations.kafka_consumer_configuration import Consumer
-from utils.configurations.kafka_producer_configuration import Producer
+from utils.kafka.kafka_consumer import Consumer
+from utils.kafka.kafka_producer import Producer
 from services.Classifier.src.text_classifier import TextClassifier
 
 

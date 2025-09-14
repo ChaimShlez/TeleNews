@@ -10,5 +10,6 @@ COPY services/Classifier /app/services/Classifier
 COPY utils/kafka /app/utils/kafka
 COPY utils/elastic /app/utils/elstic
 COPY utils/logs /app/utils/logs
+COPY utils/topics /app/utils/topics
 
 CMD ["python", "-m" , "services.Classifier.src.main"]
