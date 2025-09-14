@@ -1,24 +1,24 @@
-from kafka import KafkaProducer,errors
+from kafka import KafkaProducer
 from kafka.errors import NoBrokersAvailable
 import json
 import time
-import os
+
+from utils.kafka_pub_sub.config import *
 from utils.logger.logger import Logger
 
-logger = Logger.get_logger(index="kafka-logs")
+logger = Logger.get_logger()
 
 
 class Producer:
     def __init__(self):
         logger.info('Producer start')
-        logger.info('kafka_broker = {}'.format(os.environ['KAFKA_BROKER']))
-        kafka_broker = os.getenv("KAFKA_BROKER", "localhost:9092")
+        logger.info('kafka_broker = {}'.format(KAFKA_BROKER))
 
         while True:
             try:
                 logger.info("connecting to kafka")
                 self.producer = KafkaProducer(
-                    bootstrap_servers=[kafka_broker],
+                    bootstrap_servers=[KAFKA_BROKER],
                     value_serializer=lambda x: json.dumps(x).encode('utf-8')
                 )
                 logger.info("Connected to Kafka!")

@@ -1,5 +1,10 @@
 import logging
-from elasticsearch import Elasticsearch
+# from utils.elastic import ...
+
+"""
+תכניס אלסטיק
+"""
+from utils.logger.config import *
 from datetime import datetime
 import os
 
@@ -8,14 +13,18 @@ class Logger:
     _logger = None
 
     @classmethod
-    def get_logger(cls, name="teleNews", es_host=os.getenv("ELASTICSEARCH_HOSTS", "http://elasticsearch:9200"),
-                   index="logs", level=logging.DEBUG):
+    def get_logger(cls, name=NAME,
+                   index=INDEX, level=logging.DEBUG):
         if cls._logger:
             return cls._logger
         logger = logging.getLogger(name)
         logger.setLevel(level)
         if not logger.handlers:
-            es = Elasticsearch(es_host)
+
+            """
+            תכניס פה את המופע של אלסטיק
+            """
+
 
             class ESHandler(logging.Handler):
                 def emit(self, record):

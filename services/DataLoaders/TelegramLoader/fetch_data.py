@@ -4,7 +4,7 @@ from utils.kafka_pub_sub.pub.producer import Producer
 import io
 from utils.logger.logger import Logger
 
-logger = Logger.get_logger(index="telegram-handler")
+logger = Logger.get_logger()
 
 
 class TelegramHandler:
