@@ -2,7 +2,9 @@ from telethon import TelegramClient, events
 from services.DataLoaders.TelegramLoader.config import *
 from utils.kafka_pub_sub.pub.producer import Producer
 import io
+from utils.logger.logger import Logger
 
+logger = Logger.get_logger(index="telegram-handler")
 
 
 class TelegramHandler:
@@ -11,10 +13,12 @@ class TelegramHandler:
         self.api_hash = API_HASH
         self.token = TOKEN
         self.chat_id = CHAT_ID
+        logger.info("initialize telegram client")
         self.client = TelegramClient("my_session", self.api_id, self.api_hash)
         self.producer = Producer()
 
     async def handle_message(self, event):
+        logger.info("catching message")
         sender = await event.get_chat()
         msg = event.message
         chat_title = sender.title
@@ -55,6 +59,7 @@ class TelegramHandler:
             """
 
     def run(self):
+        logger.info('listening forever to new messages')
         @self.client.on(events.NewMessage(chats=CHANNELS))
         async def wrapper(event):
             await self.handle_message(event)
