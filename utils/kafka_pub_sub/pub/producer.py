@@ -1,4 +1,4 @@
-from kafka import KafkaProducer
+from kafka import KafkaProducer,errors
 from kafka.errors import NoBrokersAvailable
 import json
 import time

@@ -2,9 +2,12 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY services/DataLoaders/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY services/DataLoaders/TelegramLoader app/services/DataLoaders/TelegramLoader
+COPY utils/kafka_pub_sub/pub app/utils/kafka_pub_sub/pub
+COPY utils/logger app/utils/logger
+COPY utils/elastic app/utils/elastic
 
-CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "services.DataLoaders.TelegramLoader.main"]
