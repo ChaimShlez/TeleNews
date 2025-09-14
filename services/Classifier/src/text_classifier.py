@@ -7,10 +7,10 @@ from services.Classifier.src.config import *
 class TextClassifier:
     def __init__(self):
         # Topic in Hebrew
-        self.topics = [TOPICS]
+        self.topics = TOPICS
 
         # Topics in english
-        self.english_topics = [ENGLISH_TOPICS]
+        self.english_topics = ENGLISH_TOPICS
 
         # Loading the model
         print("טוען מודל...")
