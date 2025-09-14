@@ -17,7 +17,22 @@ class TextClassifier:
         self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
         print("המודל נטען בהצלחה!")
 
-    def classify_text(self, text):
+    def classify_text(self, text: str)-> dict[str, str]:
+        """
+        Classify a given text into one of the predefined topics.
+
+        This method generates embeddings for the input text and for a list of predefined
+        topics, then calculates the cosine similarity between the text and each topic.
+        The topic with the highest similarity score is returned as the predicted category.
+
+        Args:
+            text (str): The input text to classify.
+
+        Returns:
+            dict: A dictionary containing:
+                - 'category' (str): The topic with the highest similarity to the input text.
+                - 'text' (str): The original input text.
+        """
 
         # creating an embeddings
         text_embedding = self.model.encode([text])
