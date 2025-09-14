@@ -54,7 +54,7 @@ class TelegramHandler:
 
             self.redis_service.save_media_with_metadata(
                 media_id=msg_id,
-                media_data=file_bytes.hex(),
+                media_data=file_bytes,
                 metadata=metadata
             )
 
