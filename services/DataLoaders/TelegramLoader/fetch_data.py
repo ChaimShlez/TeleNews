@@ -3,6 +3,7 @@ from services.DataLoaders.TelegramLoader.config import *
 from utils.kafka_pub_sub.pub.producer import Producer
 import io
 from utils.logger.logger import Logger
+from utils.redis.redis_service import RedisService
 
 logger = Logger.get_logger(index="telegram-handler")
 
@@ -14,6 +15,7 @@ class TelegramHandler:
         logger.info("initialize telegram client")
         self.client = TelegramClient("my_session", self.api_id, self.api_hash)
         self.producer = Producer()
+        self.redis_service = RedisService(os.getenv("REDIS_HOST", "redis"), int(os.getenv("REDIS_PORT")))
 
     async def handle_message(self, event):
         logger.info("catching message")
@@ -28,7 +30,6 @@ class TelegramHandler:
                 "id": msg_id,
                 "text": msg.text
             }
-            # print(payload)
 
             self.producer.publish_message("text-telegram", payload)
 
@@ -46,17 +47,17 @@ class TelegramHandler:
             with open(path, "rb") as f:
                 file_bytes = f.read()
 
-            payload = {
+            metadata = {
                 "chat": chat_title,
-                "id": msg_id,
                 "media_type": media_type,
-                "file": file_bytes.hex()
             }
-            """
-            self.producer.send("media_topic", payload)
-            אהרן תוסיף את רדיס
 
-            """
+            self.redis_service.save_media_with_metadata(
+                media_id=msg_id,
+                media_data=file_bytes.hex(),
+                metadata=metadata
+            )
+
 
     def run(self):
         logger.info('listening forever to new messages')
