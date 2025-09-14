@@ -1,4 +1,4 @@
-from transelator.src.translator import HebrewTranslator
+from services.Translator.src.translator import HebrewTranslator
 from utils.kafka.kafka_configuration import *
 
 
