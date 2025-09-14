@@ -5,7 +5,7 @@ import io
 from utils.logger.logger import Logger
 from utils.redis.redis_service import RedisService
 
-logger = Logger.get_logger(index="telegram-handler")
+logger = Logger.get_logger()
 
 
 class TelegramHandler:
@@ -15,7 +15,7 @@ class TelegramHandler:
         logger.info("initialize telegram client")
         self.client = TelegramClient("my_session", self.api_id, self.api_hash)
         self.producer = Producer()
-        self.redis_service = RedisService(os.getenv("REDIS_HOST", "redis"), int(os.getenv("REDIS_PORT")))
+        self.redis_service = RedisService(REDIS_HOST, int(os.getenv("REDIS_PORT")))
 
     async def handle_message(self, event):
         logger.info("catching message")
@@ -31,7 +31,7 @@ class TelegramHandler:
                 "text": msg.text
             }
 
-            self.producer.publish_message("text-telegram", payload)
+            self.producer.publish_message(TOPIC, payload)
 
         elif msg.photo or msg.video or msg.audio or msg.document:
             media_type = None
@@ -54,7 +54,7 @@ class TelegramHandler:
 
             self.redis_service.save_media_with_metadata(
                 media_id=msg_id,
-                media_data=file_bytes.hex(),
+                media_data=file_bytes,
                 metadata=metadata
             )
 
