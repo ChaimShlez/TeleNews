@@ -1,21 +1,16 @@
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from services.Classifier.src.config import *
 
 
 class TextClassifier:
     def __init__(self):
         # Topic in Hebrew
-        self.topics = [
-            "טכנולוגיה", "ספורט", "פוליטיקה", "כלכלה", "בריאות",
-            "חינוך", "תרבות", "מדע", "בידור", "נסיעות"
-        ]
+        self.topics = [TOPICS]
 
         # Topics in english
-        self.english_topics = [
-            "technology", "sports", "politics", "business", "health",
-            "education", "culture", "science", "entertainment", "travel"
-        ]
+        self.english_topics = [ENGLISH_TOPICS]
 
         # Loading the model
         print("טוען מודל...")
