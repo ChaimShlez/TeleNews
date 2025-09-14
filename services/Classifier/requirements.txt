@@ -1,0 +1,6 @@
+elasticsearch==8.15.0
+sentence-transformers
+kafka-python
+scikit-learn
+numpy
+

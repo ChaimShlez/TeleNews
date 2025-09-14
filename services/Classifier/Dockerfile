@@ -2,9 +2,14 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY services/Classifier/requirements.txt .
 
-COPY . .
+RUN pip install -r requirements.txt
 
-CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+COPY services/Classifier /app/services/Classifier
+COPY utils/kafka /app/utils/kafka
+COPY utils/elastic /app/utils/elstic
+COPY utils/logs /app/utils/logs
+COPY utils/topics /app/utils/topics
+
+CMD ["python", "-m" , "services.Classifier.src.main"]
