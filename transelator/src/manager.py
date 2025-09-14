@@ -11,14 +11,16 @@ class Manager:
         topic = 'text-telegram'
         consumer = consume_messages(topic)
         for message in consumer:
-            event = message.value
-            translated_text = self.translator.translate_with_fallback(event['text'])
-            self.producer(event['id'], translated_text)
+            document = message.value
+            doc_id = document['id']
+            text = document['text']
+            translated_text = self.translator.translate_with_fallback(text)
+            self.producer(doc_id, translated_text)
 
     def producer(self, doc_id, text):
         topic = 'translated_text'
         event = {'id': doc_id, 'text': text}
-        send_event(self.producer, topic, event)
+        send_event(produce=self.producer, topic=topic, event=event)
 
 if __name__ == '__main__':
     manager = Manager()
