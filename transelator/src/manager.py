@@ -20,5 +20,8 @@ class Manager:
         event = {'id': doc_id, 'text': text}
         send_event(self.producer, topic, event)
 
+if __name__ == '__main__':
+    manager = Manager()
+    manager.main()
 
 
