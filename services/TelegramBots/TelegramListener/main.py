@@ -50,7 +50,7 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(f"נרשמת לנושאים: {', '.join(chosen)}")
             # adding to mongodb
             mongo = MongoDBService(CONNECTION_STRING,DB_NAME)
-            mongo.insert_one(COLLECTION_NAME,{str(user_id) :chosen})
+            mongo.insert_one(COLLECTION_NAME,{"user_id":str(user_id),"topics" :chosen})
 
 
         else:
