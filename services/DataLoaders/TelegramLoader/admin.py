@@ -10,7 +10,7 @@ from utils.logger.logger import Logger
 class Admin:
     def __init__(self):
         self.mongodb = MongoDBService(CONNECTION_STRING,DB_NAME)
-        self.channels = CHANNELS
+        self.channels = [channel for channel in CHANNELS["link"]]
     def admin_channels(self,channels=CHANNELS):
         if isinstance(list,channels):
             for channel in channels:
