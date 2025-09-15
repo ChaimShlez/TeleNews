@@ -6,3 +6,5 @@ CONNECTION_STRING = os.getenv("CONNECTION_STRING" ,"mongodb://TeleNews:TeleNews@
 DB_NAME = "TeleNews"
 
 COLLECTION_NAME = "users_preferences"
+
+CHANNEL_COLLECTION_NAME = os.getenv("CHANNEL_COLLECTION_NAME" , "check_channels")

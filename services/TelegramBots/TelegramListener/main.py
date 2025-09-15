@@ -3,17 +3,18 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Con
 from config import *
 from utils.topics.topics import TOPICS
 from utils.mongodb.mongodb_service import MongoDBService
-TOKEN = TOKEN_BOT
 
+TOKEN = TOKEN_BOT
+SELECT_CHANNEL = 2
 SELECT_TOPICS = 1
 
+mongo = MongoDBService(CONNECTION_STRING, DB_NAME)
 # כאן נשמור את ההעדפות של כל משתמש
 user_preferences = {}
 
-# הנושאים לבחירה (אפשר לשנות)
 
 
-# התחלת שיחה
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if (update.message is not None)  :
         user_id = update.message.from_user.id
@@ -48,14 +49,36 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chosen = user_preferences.get(user_id, set())
         if chosen:
             await update.message.reply_text(f"נרשמת לנושאים: {', '.join(chosen)}")
-            # adding to mongodb
-            mongo = MongoDBService(CONNECTION_STRING,DB_NAME)
-            mongo.insert_one(COLLECTION_NAME,{"user_id":str(user_id),"topics" :chosen})
+            try:
+                # adding to mongodb
+                mongo.insert_one(COLLECTION_NAME,{"user_id":str(user_id),"topics" :list(chosen)})
+            except Exception as e:
+                print(f"mongo error: {e}")
+                await update.message.reply_text("אירעה שגיאה בשמירת הנושאים. נסה שוב מאוחר יותר.")
 
 
         else:
             await update.message.reply_text("לא נבחרו נושאים. תוכל להריץ /start שוב בכל עת.")
         return ConversationHandler.END
+    
+
+async def channel_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message is not None:
+        await update.message.reply_text("אנא כתוב את קישור הערוץ שברצונך לשמור (לדוג' https://t.me/TeleNews1_bot):")
+        return SELECT_CHANNEL  # נעבור לשלב קליטת הערוץ
+
+async def receive_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message is not None:
+        user_id = update.message.from_user.id
+        channel = update.message.text.strip()
+        try:
+            mongo.insert_one( CHANNEL_COLLECTION_NAME, {"user_id": str(user_id) , "link":channel })
+            await update.message.reply_text(f"הערוץ {channel} נשמר בהצלחה! 🙏")
+        except Exception as e:
+            print(f"mongo error: {e}")
+            await update.message.reply_text("אירעה שגיאה בשמירת הערוץ. נסה שוב מאוחר יותר.")
+        return ConversationHandler.END
+
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
@@ -71,6 +94,17 @@ def main():
         fallbacks=[CommandHandler('done', done)]
     )
 
+    channel_conv_handler = ConversationHandler(
+    entry_points=[CommandHandler('channel', channel_command)],
+    states={
+        SELECT_CHANNEL: [
+            MessageHandler(filters.TEXT & ~filters.COMMAND, receive_channel),
+        ],
+    },
+    fallbacks=[],
+)
+
+    app.add_handler(channel_conv_handler)
     app.add_handler(conv_handler)
     app.run_polling()
 
