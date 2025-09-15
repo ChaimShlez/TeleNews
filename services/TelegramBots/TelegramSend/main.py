@@ -16,7 +16,7 @@ app = FastAPI()
 async def send_message(
     message: str = Form(...),
     users_id: List[str] = Form(...),  
-    image: UploadFile = File(None)
+    file: UploadFile = File(None)
 
 ):
     
@@ -27,9 +27,9 @@ async def send_message(
 
     async def send_one(user_id):
         try:
-            file_bytes = await image.read() if image else None
+            file_bytes = await file.read() if file else None
             if file_bytes:
-                filename = image.filename
+                filename = file.filename
                 ext = os.path.splitext(filename)[1].lower()
                 print(ext)
 
