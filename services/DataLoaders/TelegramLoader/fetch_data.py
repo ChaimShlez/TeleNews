@@ -18,8 +18,8 @@ class TelegramHandler:
         self.client = TelegramClient("my_session", self.api_id, self.api_hash)
         self.producer = Producer()
         self.redis_service = RedisService(REDIS_HOST, int(os.getenv("REDIS_PORT")))
-        self.blacklist = set()  # ניתן לטעון מה-Mongo או לעדכן דינמית
-        # Admin מקבל את client כדי לבצע מנוי לערוצים חדשים
+        self.blacklist = set()
+
         self.admin = Admin(self.client)
 
     async def handle_message(self, event):
@@ -77,8 +77,3 @@ class TelegramHandler:
 
         self.client.start()
         self.client.run_until_disconnected()
-
-
-if __name__ == "__main__":
-    bot = TelegramHandler()
-    bot.run()
