@@ -2,7 +2,7 @@ from utils.logger.logger import Logger
 logger = Logger.get_logger()
 from services.CheckerService.src.config import *
 from telethon import TelegramClient
-from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest
 from transformers import pipeline
 from googletrans import Translator
 
@@ -39,6 +39,11 @@ class Check_channel:
 
             if self._contains_bad_content(texts):
                 logger.info(f"Channel {link} contains inappropriate content")
+                try:
+                    await self.client(LeaveChannelRequest(link))
+                    logger.info(f"Left channel {link} due to inappropriate content")
+                except Exception as e:
+                    logger.error(f"Failed to leave channel {link}: {e}")
                 return False
 
             logger.info(f"Channel {link} passed content check")
