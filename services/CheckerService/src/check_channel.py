@@ -35,7 +35,7 @@ class Check_channel:
             logger.info(f"Successfully joined channel: {link}")
 
             messages = await self.client.get_messages(link, limit=5)
-            texts = [msg.message or "" for msg in messages if msg.message]
+            texts = [msg.message  for msg in messages if msg.message]
 
             if self._contains_bad_content(texts):
                 logger.info(f"Channel {link} contains inappropriate content")
