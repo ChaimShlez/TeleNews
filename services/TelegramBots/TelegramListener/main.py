@@ -7,9 +7,9 @@ from utils.mongodb.mongodb_service import MongoDBService
 TOKEN = TOKEN_BOT
 SELECT_CHANNEL = 2
 SELECT_TOPICS = 1
-
+SELECT_COUNTRY = 3
 mongo = MongoDBService(CONNECTION_STRING, DB_NAME)
-# כאן נשמור את ההעדפות של כל משתמש
+
 user_preferences = {}
 
 
@@ -51,7 +51,10 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(f"נרשמת לנושאים: {', '.join(chosen)}")
             try:
                 # adding to mongodb
-                mongo.insert_one(COLLECTION_NAME,{"user_id":str(user_id),"topics" :list(chosen)})
+                mongo.upsert_and_push(collection=COLLECTION_NAME,
+                                      query={"user_id":str(user_id)},
+                                      push_field="topics" ,
+                                      push_value=list(chosen))
             except Exception as e:
                 print(f"mongo error: {e}")
                 await update.message.reply_text("אירעה שגיאה בשמירת הנושאים. נסה שוב מאוחר יותר.")
@@ -61,19 +64,30 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("לא נבחרו נושאים. תוכל להריץ /start שוב בכל עת.")
         return ConversationHandler.END
     
-
 async def channel_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message is not None:
         await update.message.reply_text("אנא כתוב את קישור הערוץ שברצונך לשמור (לדוג' https://t.me/TeleNews1_bot):")
-        return SELECT_CHANNEL  # נעבור לשלב קליטת הערוץ
-
+        return SELECT_CHANNEL 
 async def receive_channel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message is not None:
-        user_id = update.message.from_user.id
         channel = update.message.text.strip()
+        # שומרים את הקישור בזיכרון זמני בקונטקסט (לא במונגו)
+        context.user_data['channel_link'] = channel
+        await update.message.reply_text("מאיזה מדינה הערוץ הזה? (לדוג' ישראל, ארה״ב וכו')")
+        return SELECT_COUNTRY
+
+async def receive_country(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message is not None:
+        user_id = update.message.from_user.id
+        country = update.message.text.strip()
+        channel = context.user_data.get('channel_link', '')
         try:
-            mongo.insert_one( CHANNEL_COLLECTION_NAME, {"user_id": str(user_id) , "link":channel })
-            await update.message.reply_text(f"הערוץ {channel} נשמר בהצלחה! 🙏")
+            mongo.insert_one(CHANNEL_COLLECTION_NAME, {
+                "user_id": str(user_id),
+                "link": channel,
+                "country": country
+            })
+            await update.message.reply_text(f"הערוץ {channel} נשמר בהצלחה! מדינה: {country} 🙏")
         except Exception as e:
             print(f"mongo error: {e}")
             await update.message.reply_text("אירעה שגיאה בשמירת הערוץ. נסה שוב מאוחר יותר.")
@@ -99,6 +113,9 @@ def main():
     states={
         SELECT_CHANNEL: [
             MessageHandler(filters.TEXT & ~filters.COMMAND, receive_channel),
+        ],
+        SELECT_COUNTRY: [
+            MessageHandler(filters.TEXT & ~filters.COMMAND, receive_country),
         ],
     },
     fallbacks=[],
