@@ -14,9 +14,9 @@ class Admin:
     def admin_channels(self,channels=CHANNELS):
         if isinstance(list,channels):
             for channel in channels:
-                self.mongodb.insert_one(ADMIN_COLLECTION,{"channel":channel})
+                self.mongodb.insert_one(ADMIN_COLLECTION,{"channel":channel["link"],"country":channel["country"]})
         else:
-            self.mongodb.insert_one(ADMIN_COLLECTION, {"channel": channels})
+            self.mongodb.insert_one(ADMIN_COLLECTION, {"channel": channels["link"],"country":channels["country"]})
 
         self.channels.add(channels)
         # logger.info("default channel added")
