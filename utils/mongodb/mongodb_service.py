@@ -65,6 +65,37 @@ class MongoDBService:
 
         return cursor.to_list()
 
+    def upsert_and_push(
+            self ,
+            collection: str ,
+            query: dict[str , Any] ,
+            push_field: str ,
+            push_value: Any
+    ) -> bool:
+        """
+        Update a document to push a value to a list field or insert a new document
+
+        Args:
+            collection: The name of the collection to update the document in
+            query: The query to find the document by (example: {"userid": 123})
+            push_field: The field to push the value to (example: "topics")
+            push_value: The value to push to the field (example: "politics")
+
+        Returns:
+            True if acknowledged that the document was updated, False otherwise
+        """
+        response = self._db[collection].update_one(
+            query ,
+            {"$push": {push_field: push_value}}
+        )
+        if not response.modified_count:
+            document = {
+                **query ,
+                push_field: [push_value]
+            }
+            response = self.insert_one(collection , document)
+        return response.acknowledged
+
     @staticmethod
     def _parse_projection(fields: list[str], exclude_id: bool) -> dict[str, int] | None:
         projection = {field: 1 for field in fields} if fields else None
