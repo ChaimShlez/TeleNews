@@ -1,3 +1,4 @@
-kafka-python~=2.2.15
+kafka-python
+elasticsearch==8.15.0
 requests~=2.32.5
 langdetect
