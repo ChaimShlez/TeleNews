@@ -17,7 +17,17 @@ CHANNELS = [{"link":"https://t.me/amitsegal","country":"Israel"},
             {"link":"https://t.me/TommyRobinsonNews","country":"England"},
             {"link":"https://t.me/rian_ru","country":"Russia"},
             {"link":"https://t.me/indianexpress","country":"India"},
-            {"link":"https://t.me/voachinese","country":"China"}]
+            {"link":"https://t.me/voachinese","country":"China"},
+            {"link":"https://t.me/France24_fr","country":"France"},
+            {"link":"https://t.me/A3Noticias","country":"Spain"},
+            {"link":"httpa://t.me/sapiens3","country":"Italy"},
+            {"link":"https://t.me/theriotimes","country":"Brazil"},
+            {"link":"https://t.me/sepahcybery","country":"Iran"},
+            {"link":"https://t.me/solcugazete","country":"Turkey"},
+            {"link":"https://t.me/LaColombiaOscuraa","country":"Spain"},
+            {"link":"https://t.me/MILITSIYA_UZB","country":"Uzbekistan"},
+            {"link":"https://t.me/oa_channel","country":"Cambodia"},
+            {"link":"https://t.me/markuskrall_abb","country":"Germany"}]
 
 
 CONNECTION_STRING = os.getenv("CONNECTION_STRING" ,"mongodb://TeleNews:TeleNews@mongo:27017/TeleNews?authSource=admin")
