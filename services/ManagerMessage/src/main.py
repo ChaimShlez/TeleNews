@@ -1,7 +1,9 @@
 from services.ManagerMessage.src.consumer_manager import ConsumerManager
-# from services.ManagerMessage.src.config import *
+from services.ManagerMessage.src.config import *
+from utils.topics.topics import *
 
-consumer = ConsumerManager()
+topics = [v for k, v in TOPICS.items()]
+consumer = ConsumerManager(*topics, connection=CONNECTION, db_name=DB_NAME, collection=COLLECTION, url=URL)
 
 
 def main():

@@ -7,9 +7,10 @@ COPY services/Classifier/requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY services/Classifier /app/services/Classifier
-COPY utils/kafka /app/utils/kafka
+COPY utils/kafka_pub_sub/pub /app/utils/kafka_pub_sub/pub
+COPY utils/kafka_pub_sub/sub /app/utils/kafka_pub_sub/sub
 COPY utils/elastic /app/utils/elstic
-COPY utils/logs /app/utils/logs
+COPY utils/logger /app/utils/logger
 COPY utils/topics /app/utils/topics
 
 CMD ["python", "-m" , "services.Classifier.src.main"]

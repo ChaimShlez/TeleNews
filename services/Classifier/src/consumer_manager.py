@@ -1,5 +1,5 @@
-from utils.kafka.kafka_consumer import Consumer
-from utils.kafka.kafka_producer import Producer
+from utils.kafka_pub_sub.sub.consumer import Consumer
+from utils.kafka_pub_sub.pub.producer import Producer
 from services.Classifier.src.text_classifier import TextClassifier
 
 
@@ -19,4 +19,4 @@ class ConsumerManager:
         for messages in self.events:
             res = self.__classifier(messages.value['text'])
             # Sending massage to kafka by topic
-            self.producer.send_event(res['category'], messages.value)
+            self.producer.publish_message(res['category'], messages.value)
