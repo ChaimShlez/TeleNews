@@ -1,8 +1,7 @@
-import json
 from typing import List
 from fastapi import FastAPI, File, UploadFile, Form
 from telegram import Bot
-from config import *
+from services.TelegramBots.TelegramSend.src.config import *
 import uvicorn
 import os
 import io
