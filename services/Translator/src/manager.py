@@ -1,29 +1,32 @@
 from services.Translator.src.translator import HebrewTranslator
-from utils.kafka.kafka_configuration import *
+from utils.kafka_pub_sub.sub.consumer import Consumer
+from utils.kafka_pub_sub.pub.producer import Producer
+from utils.logger.logger import Logger
 
+logger = Logger().get_logger()
 
 class Manager:
-    def __init__(self):
+    def __init__(self, topic_pub, topic_sub):
+        logger.info('init translator manager')
         self.translator = HebrewTranslator()
-        self.producer = produce_message()
+        self.producer = Producer()
+        self.events = Consumer(topic_sub).consumer
+        self.topic_pub = topic_pub
 
-    def main(self):
-        topic = 'text-telegram'
-        consumer = consume_messages(topic)
-        for message in consumer:
+    def consume_and_publish_translated_text(self):
+        for message in self.events:
             document = message.value
             doc_id = document['id']
             text = document['text']
             translated_text = self.translator.translate_with_fallback(text)
-            self.producer(doc_id, translated_text)
+            self.publisher(doc_id, translated_text)
 
-    def producer(self, doc_id, text):
-        topic = 'translated_text'
-        event = {'id': doc_id, 'text': text}
-        send_event(produce=self.producer, topic=topic, event=event)
+    def publisher(self, doc_id, text):
+        message = {'id': doc_id, 'text': text}
+        self.producer.publish_message(topic=self.topic_pub, message=message)
 
 if __name__ == '__main__':
     manager = Manager()
-    manager.main()
+
 
 
