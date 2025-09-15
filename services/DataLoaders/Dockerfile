@@ -9,5 +9,6 @@ COPY services/DataLoaders/TelegramLoader app/services/DataLoaders/TelegramLoader
 COPY utils/kafka_pub_sub/pub app/utils/kafka_pub_sub/pub
 COPY utils/logger app/utils/logger
 COPY utils/elastic app/utils/elastic
+COPY utils/mongodb app/utils/mongodb
 
 CMD ["python", "-m", "services.DataLoaders.TelegramLoader.main"]
