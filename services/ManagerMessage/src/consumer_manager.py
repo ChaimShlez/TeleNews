@@ -29,7 +29,7 @@ class ConsumerManager:
         print("starting to consume")
         for message in self.events:
             users_id: list[dict] = self.__get_users_id_from_mongo(message.topic, self.collection)
-            media_data = self.redis_service.get_media_with_metadata(message.value['id'],message.value['metadata']['chat'])
-            response = self.sender.send_message(message.value, users_id,media_data)
+            file_data = self.redis_service.get_media_with_metadata(message.value['id'],message.value['metadata']['chat'])
+            response = self.sender.send_message(message.value, users_id,file_data)
             print(response)
 

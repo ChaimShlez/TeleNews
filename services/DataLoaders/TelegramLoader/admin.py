@@ -2,6 +2,8 @@ from utils.mongodb.mongodb_service import MongoDBService
 from services.DataLoaders.TelegramLoader.config import *
 from utils.logger.logger import Logger
 from telethon.tl.functions.channels import JoinChannelRequest
+import httpx
+import asyncio
 
 logger = Logger.get_logger()
 
@@ -37,12 +39,19 @@ class Admin:
 
         if link in admin_channels or link in blacklist_channels:
             return
-        """
-        כאן אפשר להכניס לוגיקה של בדיקה אם הערוץ ראוי
-        
-        """
-        score = True
-        if score:
+
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(CHECKER_URL,
+                                             json={"link": link, "country": country})
+                result = response.json()
+            except Exception as e:
+
+                logger.error(f"Failed to send channel to checker: {e}")
+                return
+
+        if result.get("approved"):
+
             try:
                 await self.client(JoinChannelRequest(link))
                 logger.info(f"Subscribed to new approved channel: {link}")
