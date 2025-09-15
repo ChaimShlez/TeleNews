@@ -4,6 +4,7 @@ from utils.kafka_pub_sub.pub.producer import Producer
 import io
 from utils.logger.logger import Logger
 from utils.redis.redis_service import RedisService
+from services.DataLoaders.TelegramLoader.admin import Admin
 
 logger = Logger.get_logger()
 
@@ -61,7 +62,7 @@ class TelegramHandler:
 
     def run(self):
         logger.info('listening forever to new messages')
-        @self.client.on(events.NewMessage(chats=CHANNELS))
+        @self.client.on(events.NewMessage(chats=Admin().get_channels()))
         async def wrapper(event):
             await self.handle_message(event)
 
