@@ -19,15 +19,41 @@ class Logger:
 
             class ESHandler(logging.Handler):
                 def emit(self, record):
+                    #logger example: logger.info('sent event', extra={'subject': 'auth', 'user_id': 123})  *The extra is optional*, The key will be the field name and the value will be the value.
                     try:
-                        es.index(index=index, document={
+                        document={
                             "timestamp": datetime.utcnow().isoformat(),
 
                             "level": record.levelname,
                             "logger": record.name,
                             "message": record.getMessage()
 
-                        })
+                        }
+                        for key, value in record.__dict__.items():
+                            if key not in (
+                                "name",
+                                "msg",
+                                "args",
+                                "levelname",
+                                "levelno",
+                                "pathname",
+                                "filename",
+                                "module",
+                                "exc_info",
+                                "exc_text",
+                                "stack_info",
+                                "lineno",
+                                "funcName",
+                                "created",
+                                "msecs",
+                                "relativeCreated",
+                                "thread",
+                                "threadName",
+                                "processName",
+                                "process",
+                            ):
+                                document[key] = value
+                        es.index(index=index, document=document)
                     except Exception as e:
                         print(f"ES log failed: {e}")
 
