@@ -20,7 +20,7 @@ class Admin:
 
         self.channels.add(channels)
         # logger.info("default channel added")
-    def check_channels(self,channel: str):
+    def check_channels(self,channel: str,country: str):
 
         admin_channels = set()
         blacklist_channels = set()
@@ -52,19 +52,19 @@ class Admin:
             # logger.info("validating the channel contents")
             #if score:
                 # logger.info("channel passed the validation")
-                self.admin_channels(channel)
+                self.admin_channels(channel,country)
             else:
                 # logger.info("channel passed to blacklist content is not proper")
-                self.blacklist_channel(channel)
+                self.blacklist_channel(channel,country)
             """
 
-    def blacklist_channels(self,channel:str):
+    def blacklist_channels(self,channel:str,country: str):
 
         pass
 
         """
         # logger.info("saving bad channel in mongodb in the blacklist")
-        self.mongodb.insert_one(BLACKLIST_COLLECTION,{"channel":channel})
+        self.mongodb.insert_one(BLACKLIST_COLLECTION,{"channel":channel,"county":country})
         
         """
     def get_channels(self) -> set:
