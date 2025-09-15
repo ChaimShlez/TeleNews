@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
+CHECKER_URL=os.getenv("CHECKER_URL","http://localhost:8001/check")
 
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = int(os.getenv('CHAT_ID'))
