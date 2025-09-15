@@ -63,6 +63,23 @@ services:
     networks:
       TeleNewsProject:
 # ------------------------------------------------------------------- 
+  mongodb:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: TeleNews
+      MONGO_INITDB_ROOT_PASSWORD: "TeleNews"
+      MONGO_INITDB_DATABASE: TeleNews
+    
+     
+    restart: unless-stopped
+    networks:
+      TeleNewsProject:
+
+# ------------------------------------------------------------------- 
+
 
 
 
