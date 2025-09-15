@@ -25,6 +25,7 @@ class TelegramHandler:
         chat_title = sender.title
         msg_id = msg.id
 
+
         if msg.text:
             payload = {
                 "chat": chat_title,
