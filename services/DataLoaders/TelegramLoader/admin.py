@@ -10,6 +10,21 @@ class Admin:
     def __init__(self, telegram_client):
         self.client = telegram_client  # TelegramClient עבור מנוי לערוצים
         self.mongodb = MongoDBService(CONNECTION_STRING, DB_NAME)
+        self.channels = set()  # שמירה פנימית של הערוצים
+
+    def admin_channels(self, channels=CHANNELS):
+        """ מוסיף ערוצים כברירת מחדל או חדשים למונגו ולסט פנימי """
+        if isinstance(channels, list):
+            for channel in channels:
+                # שמירה במונגו
+                self.mongodb.insert_one(ADMIN_COLLECTION, {"channel": channel.get("link", channel), "country": channel.get("country", "unknown")})
+                # שמירה בסט פנימי
+                self.channels.add(channel.get("link", channel))
+        else:
+            self.mongodb.insert_one(ADMIN_COLLECTION, {"channel": channels, "country": "unknown"})
+            self.channels.add(channels)
+
+        logger.info(f"Admin channel(s) added: {self.channels}")
 
     def blacklist_channels(self, channel: str, country: str = "unknown"):
         """ מוסיף ערוץ ל־Blacklist """
@@ -31,6 +46,7 @@ class Admin:
                 await self.client(JoinChannelRequest(link))
                 logger.info(f"Subscribed to new approved channel: {link}")
                 self.mongodb.insert_one(ADMIN_COLLECTION, {"channel": link, "country": country})
+                self.channels.add(link)  # גם בסט פנימי
             except Exception as e:
                 logger.error(f"Failed to subscribe to {link}: {e}")
         else:
@@ -45,6 +61,5 @@ class Admin:
         for doc in check_mongo:
             link = doc["link"]
             country = doc.get("country", "unknown")
-            # מנוי אוטומטי לערוץ אם עבר בדיקה
             import asyncio
             asyncio.create_task(self.approve_and_subscribe_channel(link, country))
