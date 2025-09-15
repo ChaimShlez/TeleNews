@@ -25,8 +25,7 @@ class Manager:
         message = {'id': doc_id, 'text': text}
         self.producer.publish_message(topic=self.topic_pub, message=message)
 
-if __name__ == '__main__':
-    manager = Manager()
+
 
 
 
