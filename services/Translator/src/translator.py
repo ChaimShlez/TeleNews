@@ -9,6 +9,9 @@ import re
 from typing import Optional, Dict, List, Union
 import time
 from urllib.parse import quote
+from utils.logger.logger import Logger
+
+logger = Logger().get_logger()
 
 
 class HebrewTranslator:
@@ -22,33 +25,17 @@ class HebrewTranslator:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         })
 
-        self.supported_languages = {
-            'en': 'English',
-            'es': 'Spanish',
-            'fr': 'French',
-            'de': 'German',
-            'it': 'Italian',
-            'pt': 'Portuguese',
-            'ru': 'Russian',
-            'ar': 'Arabic',
-            'ja': 'Japanese',
-            'ko': 'Korean',
-            'zh': 'Chinese',
-            'nl': 'Dutch',
-            'sv': 'Swedish',
-            'no': 'Norwegian',
-            'da': 'Danish'
-        }
-
     def detect_language(self, text: str) -> str:
         """
         מקבלת סטרינג ומחזירה את השפה המשוערת והסתברויות אפשריות.
         """
         try:
             main_lang = detect(text)
+            logger.info(f'detected language: {main_lang}')
             return main_lang
 
-        except Exception as e:
+        except:
+            logger.error(f'detected language error: {text}')
             return 'en'  # ברירת מחדל
 
     def translate_mymemory(self, text: str, source_lang: str = 'auto') -> Dict:
@@ -74,7 +61,9 @@ class HebrewTranslator:
             data = response.json()
 
             if data['responseStatus'] == 200:
+
                 translated = data['responseData']['translatedText']
+                logger.info(f'translated text with mymemory successfully')
                 return {
                     'success': True,
                     'translated_text': translated,
@@ -83,6 +72,7 @@ class HebrewTranslator:
                     'method': 'MyMemory'
                 }
             else:
+                logger.error(f'translated text with mymemory error: {data.get('responseDetails', 'Unknown error')}')
                 return {
                     'success': False,
                     'error': data.get('responseDetails', 'Unknown error'),
@@ -90,6 +80,7 @@ class HebrewTranslator:
                 }
 
         except Exception as e:
+            logger.error(f'translate mymemory error: {e}')
             return {
                 'success': False,
                 'error': str(e),
@@ -116,6 +107,7 @@ class HebrewTranslator:
             result = response.json()
 
             if 'translatedText' in result:
+                logger.info(f'translated text with LibreTranslate successfully')
                 return {
                     'success': True,
                     'translated_text': result['translatedText'],
@@ -123,6 +115,7 @@ class HebrewTranslator:
                     'method': 'LibreTranslate'
                 }
             else:
+                logger.error(f'translated text with LibreTranslate error: {result.get('error', 'Unknown error')}')
                 return {
                     'success': False,
                     'error': result.get('error', 'Unknown error'),
@@ -130,6 +123,7 @@ class HebrewTranslator:
                 }
 
         except Exception as e:
+            logger.error(f'translate LibreTranslate error: {e}')
             return {
                 'success': False,
                 'error': str(e),
@@ -171,7 +165,7 @@ class HebrewTranslator:
                         end = result_text.find('"', start)
                         translation = result_text[start:end].replace('\\u', '\\u')
                         translation = translation.encode().decode('unicode_escape')
-
+                        logger.info(f'translated text with Microsoft Translator successfully')
                         return {
                             'success': True,
                             'translated_text': translation,
@@ -181,6 +175,7 @@ class HebrewTranslator:
                     except:
                         pass
 
+            logger.error('Failed to parse Microsoft response')
             return {
                 'success': False,
                 'error': 'Failed to parse Microsoft response',
@@ -188,6 +183,7 @@ class HebrewTranslator:
             }
 
         except Exception as e:
+            logger.error(f'translate Microsoft translation error: {e}')
             return {
                 'success': False,
                 'error': str(e),
@@ -257,9 +253,9 @@ class HebrewTranslator:
                 if result['success']:
                     return result
                 else:
-                    print(f"שירות {result['method']} נכשל: {result.get('error', 'Unknown error')}")
+                    logger.error(f"שירות {result['method']} נכשל: {result.get('error', 'Unknown error')}")
             except Exception as e:
-                print(f"שגיאה בשירות {method.__name__}: {e}")
+                logger.error(f"שגיאה בשירות {method.__name__}: {e}")
                 continue
 
         return {
@@ -284,37 +280,6 @@ class HebrewTranslator:
                 time.sleep(delay)
 
         return results
-
-    def translate_file(self, file_path: str, output_path: str = None, source_lang: str = 'auto') -> bool:
-        """
-        תרגום קובץ טקסט
-        """
-        try:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                content = file.read()
-
-            result = self.translate_with_fallback(content, source_lang)
-
-            if result['success']:
-                output_path = output_path or file_path.replace('.txt', '_hebrew.txt')
-                with open(output_path, 'w', encoding='utf-8') as file:
-                    file.write(result['translated_text'])
-
-                print(f"התרגום נשמר ב: {output_path}")
-                return True
-            else:
-                print(f"שגיאה בתרגום: {result['error']}")
-                return False
-
-        except Exception as e:
-            print(f"שגיאה בקריאת הקובץ: {e}")
-            return False
-
-    def get_supported_languages(self) -> Dict[str, str]:
-        """
-        החזרת רשימת השפות הנתמכות
-        """
-        return self.supported_languages.copy()
 
 
 # פונקציית נוחות לשימוש מהיר
