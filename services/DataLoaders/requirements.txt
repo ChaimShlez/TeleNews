@@ -1,5 +1,7 @@
 telethon
-kafka
+kafka-python
 elasticsearch==8.15.0
 redis
 pymongo
+dotenv
+httpx
