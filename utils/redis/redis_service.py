@@ -11,8 +11,9 @@ class RedisService:
     def save_media_with_metadata(
             self,
             media_id: str,
+            title_id: str,
+            media_type: str,
             media_data: bytes,
-            metadata: dict,
             expire: int = 86400
     ):
         """
@@ -20,28 +21,34 @@ class RedisService:
 
         Args:
             media_id: a unique identifier for the media
+            title_id: a unique identifier for the title
+            media_type: the type of the media
             media_data: the media data in bytes
-            metadata: a dictionary of metadata for the media
             expire: the expire time in seconds
         """
-        self.redis_client.hset(f'media:metadata:{media_id}', mapping=metadata)
-        self.redis_client.set(f'media:data:{media_id}', media_data, expire)
-        self.redis_client.expire(f'media:data:{media_id}', expire)
+        hash_name = f'media:{media_id}:{title_id}'
+        self.redis_client.hset(hash_name, "title_id", title_id)
+        self.redis_client.hset(hash_name, "media_type", media_type)
+        self.redis_client.hset(hash_name, "media_data", media_data)
+        self.redis_client.expire(hash_name, expire)
 
-    def get_media_with_metadata(self, media_id: str) -> dict[str, Any]:
+    def get_media_with_metadata(self, media_id: str, title_id: str) -> dict[str, Any]:
         """
         Get media with metadata from redis
 
         Args:
             media_id: a unique identifier for the media
+            title_id: a unique identifier for the title
+
+        Returns:
+            dict: a dictionary containing the media metadata (title_id, media_type, media_data)
         """
-        metadata: dict = self.redis_client.hgetall(f'media:metadata:{media_id}')
-        media_data: bytes = self.redis_client.get(f'media:data:{media_id}')
+        metadata: dict = self.redis_client.hgetall(f'media:{media_id}:{title_id}')
 
         result = {
-            "chat": metadata.get("chat"),
+            "chat": metadata.get("title_id"),
             "media_type": metadata.get("media_type"),
-            "file_bytes": media_data
+            "file_bytes": metadata.get("media_data")
         }
 
         return result
