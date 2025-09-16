@@ -1,10 +1,12 @@
 from services.ManagerMessage.src.message_sender import MessageSender
 from utils.kafka_pub_sub.sub.consumer import Consumer
 from utils.kafka_pub_sub.pub.producer import Producer
+from utils.logger.logger import Logger
 from utils.mongodb.mongodb_service import MongoDBService
+logger = Logger.get_logger()
+
 from utils.redis.redis_service import RedisService
 from config import *
-
 class ConsumerManager:
 
     def __init__(self, *topics_sub, connection, db_name: str, collection: str, url: str):
@@ -26,10 +28,15 @@ class ConsumerManager:
 
 
     def consume_messages(self):
-        print("starting to consume")
+        logger.info("starting to consume")
         for message in self.events:
             users_id: list[dict] = self.__get_users_id_from_mongo(message.topic, self.collection)
+
+            response = self.sender.send_message(message.value, users_id)
+            logger.info(response)
+
             file_data = self.redis_service.get_media_with_metadata(message.value['id'],message.value['metadata']['chat'])
             response = self.sender.send_message(message.value, users_id,file_data)
             print(response)
+
 
