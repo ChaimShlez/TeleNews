@@ -72,7 +72,7 @@ class HebrewTranslator:
                     'method': 'MyMemory'
                 }
             else:
-                logger.error(f'translated text with mymemory error: {data.get('responseDetails', 'Unknown error')}')
+                logger.error(f"translated text with mymemory error: {data.get('responseDetails', 'Unknown error')}")
                 return {
                     'success': False,
                     'error': data.get('responseDetails', 'Unknown error'),
