@@ -72,8 +72,3 @@ class Check_channel:
 
         return False
 
-if __name__ == '__main__':
-    check = Check_channel()
-    result = asyncio.run(check.check_channel("https://t.me/amitsegal"))
-    logger.info(f"Channel allowed? {result}")
-    print(f"Channel allowed? {result}")
