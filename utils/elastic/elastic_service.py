@@ -1,6 +1,6 @@
 import time
 from elasticsearch import Elasticsearch
-from utils.configurations.config import *
+from utils.elastic.config import ES_HOST
 
 
 class ElasticConn:

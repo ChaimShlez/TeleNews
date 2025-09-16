@@ -1,6 +1,9 @@
 from utils.kafka_pub_sub.sub.consumer import Consumer
 from utils.kafka_pub_sub.pub.producer import Producer
 from services.Classifier.src.text_classifier import TextClassifier
+from utils.logger.logger import Logger
+
+logger = Logger.get_logger()
 
 
 class ConsumerManager:
@@ -15,7 +18,7 @@ class ConsumerManager:
 
 
     def consume_messages(self):
-        print("starting to consume")
+        logger.info("starting to consume")
         for messages in self.events:
             res = self.__classifier(messages.value['text'])
             # Sending massage to kafka by topic

@@ -1,21 +1,24 @@
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+
+from utils.logger.logger import Logger
 from utils.topics.topics import *
 
+logger = Logger.get_logger()
 
 class TextClassifier:
     def __init__(self):
-        # Topic in Hebrew
+        # Topic in Hebrew`
         self.topics = [k for k, v in TOPICS.items()]
 
         # Topics in english
         self.english_topics = [v for k, v in TOPICS.items()]
 
         # Loading the model
-        print("טוען מודל...")
+        logger.info("Loading model...")
         self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
-        print("המודל נטען בהצלחה!")
+        logger.info("The model was successfully loaded!")
 
     def classify_text(self, text: str)-> dict[str, str]:
         """
