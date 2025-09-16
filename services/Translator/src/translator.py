@@ -115,7 +115,7 @@ class HebrewTranslator:
                     'method': 'LibreTranslate'
                 }
             else:
-                logger.error(f'translated text with LibreTranslate error: {result.get('error', 'Unknown error')}')
+                logger.error(f"translated text with LibreTranslate error: {result.get('error', 'Unknown error')}")
                 return {
                     'success': False,
                     'error': result.get('error', 'Unknown error'),

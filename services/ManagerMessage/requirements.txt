@@ -1,4 +1,7 @@
 elasticsearch==8.15.0
 kafka-python
 requests
+pymongo
+redis
+requests
 

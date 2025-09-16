@@ -6,16 +6,15 @@ from utils.mongodb.mongodb_service import MongoDBService
 logger = Logger.get_logger()
 
 from utils.redis.redis_service import RedisService
-from config import *
 class ConsumerManager:
 
-    def __init__(self, *topics_sub, connection, db_name: str, collection: str, url: str):
+    def __init__(self, *topics_sub, connection, db_name: str, collection: str, url: str, host, port):
         self.events = Consumer(*topics_sub).consumer
         self.producer = Producer()
         self.mongo_service = MongoDBService(connection, db_name)
         self.collection = collection
         self.sender = MessageSender(url)
-        self.redis_service = RedisService(host=HOST, port=REDIS_PORT)
+        self.redis_service = RedisService(host=host, port=port)
 
 
 
