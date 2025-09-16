@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY services/ManagerMessage/requirements.txt .
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY services/ManagerMessage /app/services/ManagerMessage
 COPY utils/kafka_pub_sub/pub /app/utils/kafka_pub_sub/pub

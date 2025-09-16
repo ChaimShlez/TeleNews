@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY services/TelegramBots/TelegramListener/requirements.txt .
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY services/TelegramBots/TelegramSend /app/services/TelegramBots/TelegramSend
 COPY utils/elastic /app/utils/elstic
