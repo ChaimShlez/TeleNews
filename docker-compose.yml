@@ -92,7 +92,8 @@ services:
   
   dataloader:
     build:
-      context: .../services/DataLoaders
+      context: ../../
+      dockerfile: services/DataLoaders/Dockerfile
     container_name: dataloaders
     environment:
       - API_ID=${API_ID}
@@ -116,7 +117,8 @@ services:
 
   translator:
     build:
-      context: .../services/Translator
+      context: ../../
+      dockerfile: services/Translator/Dockerfile
     container_name: translator
     environment:
       - KAFKA_BROKER=kafka:9092
@@ -132,7 +134,8 @@ services:
 
   classifier:
     build:
-      context: .../services/Classifier
+      context: ../../
+      dockerfile: services/Classifier/Dockerfile
     container_name: classifier
     environment:
       - KAFKA_BROKER=kafka:9092
@@ -145,10 +148,11 @@ services:
     networks:
       - TeleNewsProject
 
-  telegram_bots:
+  telegram_bots_listener:
     build:
-      context: .../services/TelegramBots
-    container_name: telegram_bots
+      context: ../../
+      dockerfile: services/TelegramBots/TelegramBotsListener/Dockerfile
+    container_name: telegram_bots_listener
     environment:
       - CONNECTION_STRING=mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin
       - ES_HOST=http://elasticsearch:9200
@@ -160,16 +164,30 @@ services:
     networks:
       - TeleNewsProject
 
+  telegram_bots_sender:
+    build:
+      context: ../../
+      dockerfile: services/TelegramBots/TelegramSend/Dockerfile
+    container_name: telegram_bots_sender
+    environment:
+      - ES_HOST=http://elasticsearch:9200
+      - INDEX_LOG=telegram_bots_sender
+    depends_on:
+      - elasticsearch
+    networks:
+      - TeleNewsProject
+
   manager_message:
     build:
-      context: .../services/ManagerMessage
+      context: ../../
+      dockerfile: services/ManagerMessage/Dockerfile
     container_name: manager_message
     environment:
       - KAFKA_BROKER=kafka:9092
       - CONNECTION=mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin
       - DB_NAME=TeleNews
       - COLLECTION=users_preferences
-      - URL=http://telegram_bots:8000/send_message
+      - URL=http://telegram_bots_sender:8000/send_message
       - HOST=redis
       - REDIS_PORT=6379
       - ES_HOST=http://elasticsearch:9200
@@ -182,7 +200,8 @@ services:
 
   checker:
     build:
-      context: .../services/CheckerService
+      context: ../../
+      dockerfile: services/CheckerService/Dockerfile
     container_name: checker
     environment:
       - API_ID=${API_ID}
