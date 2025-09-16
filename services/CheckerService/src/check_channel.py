@@ -5,64 +5,75 @@ from telethon import TelegramClient
 from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest
 from transformers import pipeline
 from googletrans import Translator
+import asyncio
+import re
 
 classifier = pipeline(
     "text-classification",
     model="unitary/unbiased-toxic-roberta",
-    device=-1
+    device=-1  # CPU
 )
 
 translator = Translator()
-TARGET_LABELS = ["sexual"]
-
-
 
 
 class Check_channel:
     def __init__(self):
-
         self.api_id = API_ID
         self.api_hash = API_HASH
-        logger.info("Initializing Telegram client")
         self.client = TelegramClient("my_session", self.api_id, self.api_hash)
 
-
-
     async def check_channel(self, link: str) -> bool:
-
         try:
+            await self.client.start()
             await self.client(JoinChannelRequest(link))
-            logger.info(f"Successfully joined channel: {link}")
 
-            messages = await self.client.get_messages(link, limit=5)
-            texts = [msg.message  for msg in messages if msg.message]
+            messages = await self.client.get_messages(link, limit=20)
+            texts = []
+            for msg in messages:
+                if msg.message:
+                    texts.append(msg.message)
+                if hasattr(msg, "media") and getattr(msg.media, "caption", None):
+                    texts.append(msg.media.caption)
 
-            if self._contains_bad_content(texts):
-                logger.info(f"Channel {link} contains inappropriate content")
+            if await self._contains_bad_content(texts, link):
                 try:
                     await self.client(LeaveChannelRequest(link))
-                    logger.info(f"Left channel {link} due to inappropriate content")
                 except Exception as e:
-                    logger.error(f"Failed to leave channel {link}: {e}")
+                    logger.info(f"Error leaving channel {link}: {e}")
                 return False
 
-            logger.info(f"Channel {link} passed content check")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to join or check channel {link}: {e}")
+            logger.info(f"Error checking channel {link}: {e}")
             return False
 
-    def _contains_bad_content(self, messages: list[str]) -> bool:
+    async def _contains_bad_content(self, messages: list[str], link: str) -> bool:
         for msg in messages:
-            text_en = translator.translate(msg, dest="en").text
+            try:
+                text_en = translator.translate(msg, dest="en").text
+            except Exception as e:
+                logger.info(f"Translation error for channel {link}: {e}")
+                continue
+
+            for category, keywords in CATEGORIES.items():
+                if any(re.search(rf"\b{kw}\b", text_en, re.IGNORECASE) for kw in keywords):
+                    logger.info(f"Channel flagged in category '{category}': {link}")
+                    return True
 
             results = classifier(text_en)
             for item in results:
                 label = item["label"].lower()
                 score = item["score"]
-                if any(target in label for target in TARGET_LABELS) and score > 0.5:
-                    logger.info(f"Text flagged: {label} ({score})")
+                if label == "nsfw" and score > 0.5:
+                    logger.info(f"Channel flagged by model as NSFW: {link}")
                     return True
+
         return False
 
+if __name__ == '__main__':
+    check = Check_channel()
+    result = asyncio.run(check.check_channel("https://t.me/amitsegal"))
+    logger.info(f"Channel allowed? {result}")
+    print(f"Channel allowed? {result}")
