@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bots-listener
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram-bots-listener
+  template:
+    metadata:
+      labels:
+        app: telegram-bots-listener
+    spec:
+      containers:
+        - name: telegram-bots-listener
+          image: chaim022/telegram-bots-listener:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CONNECTION_STRING
+              value: "mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin"
+            - name: ES_HOST
+              value: "http://elasticsearch:9200"
+            - name: INDEX_LOG
+              value: "telegram_bots"
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram-bots-listener
+spec:
+  selector:
+    app: telegram-bots-listener
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
