@@ -69,15 +69,11 @@ class TelegramHandler:
             await msg.download_media(file=buffer)
             file_bytes = buffer.getvalue()
 
-            metadata = {
-                "chat": chat_title,
-                "media_type": media_type,
-            }
-
             self.redis_service.save_media_with_metadata(
                 media_id=msg_id,
-                media_data=file_bytes,
-                metadata=metadata
+                title_id=chat_title,
+                media_type=media_type,
+                media_data=file_bytes
             )
 
     def run(self):

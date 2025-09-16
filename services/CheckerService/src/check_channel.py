@@ -44,13 +44,3 @@ class Check_channel:
             # logger.info(f"Error checking channel {link}: {e}")
             return False
 
-
-
-import asyncio
-
-if __name__ == '__main__':
-    print("dwlefrnvj")
-    ch = Check_channel()
-    result = asyncio.run(ch.check_channel("amitsegal"))
-    print(result)
-

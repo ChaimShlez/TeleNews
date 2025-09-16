@@ -8,7 +8,6 @@ API_HASH = os.getenv("API_HASH")
 CHECKER_URL=os.getenv("CHECKER_URL","http://localhost:8001/check")
 
 TOKEN = os.getenv('TOKEN')
-CHAT_ID = int(os.getenv('CHAT_ID'))
 TOPIC = os.getenv("TOPIC","text-telegram")
 REDIS_HOST = os.getenv("REDIS_HOST","redis")
 
