@@ -3,7 +3,7 @@ import json
 import os
 from utils.logger.logger import Logger
 
-logger = Logger.get_logger(index="kafka-logs")
+logger = Logger.get_logger()
 
 
 class Consumer:
