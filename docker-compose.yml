@@ -151,7 +151,7 @@ services:
   telegram_bots_listener:
     build:
       context: ../../
-      dockerfile: services/TelegramBots/TelegramBotsListener/Dockerfile
+      dockerfile: services/TelegramBots/TelegramListener/Dockerfile
     container_name: telegram_bots_listener
     environment:
       - CONNECTION_STRING=mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin
