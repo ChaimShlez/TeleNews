@@ -9,9 +9,9 @@ import re
 from typing import Optional, Dict, List, Union
 import time
 from urllib.parse import quote
-from utils.logger.logger import Logger
-
-logger = Logger().get_logger()
+# from utils.logger.logger import Logger
+import logging
+logger = logging
 
 
 class HebrewTranslator:
