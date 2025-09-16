@@ -13,26 +13,35 @@ jobs:
         
         image:
          # There is an error, you need to check the redirects.
-          - name: preprocessor
-            dockerfile: services/Preprocessor/Dockerfile
-            context: services/Preprocessor
-            repository: shmuelblau/preprocessor
-          - name: dataloader
-            dockerfile: services/DataLoader/Dockerfile
-            context: services/DataLoader
-            repository: shmuelblau/dataloader
-          - name: transcriber
-            dockerfile: services/Transcriber/Dockerfile
-            context: services/Transcriber
-            repository: shmuelblau/transcriber
-          - name: classified
-            dockerfile: services/Classified/Dockerfile
-            context: services/Classified
-            repository: shmuelblau/classified
-          - name: dataretrieval
-            dockerfile: services/DataRetrieval/Dockerfile
-            context: services/DataRetrieval
-            repository: shmuelblau/dataretrieval
+          - name: CheckService
+            dockerfile: services/CheckService/Dockerfile
+            context: services/CheckService
+            repository: ChaimShlez/TeleNews/CheckService
+          - name: DataLoaders
+            dockerfile: services/DataLoaders/Dockerfile
+            context: services/DataLoaders
+            repository: ChaimShlez/TeleNews/DataLoaders
+          - name: Translator
+            dockerfile: services/Translator/Dockerfile
+            context: services/Translator
+            repository: ChaimShlez/TeleNews/Translator
+          - name: Classifier
+            dockerfile: services/Classifier/Dockerfile
+            context: services/Classifier
+            repository: ChaimShlez/TeleNews/Classifier
+
+          - name: ManagerMessage
+            dockerfile: services/ManagerMessage/Dockerfile
+            context: services/ManagerMessage
+            repository: ChaimShlez/TeleNews/ManagerMessage
+          - name: TelegramListener
+            dockerfile: services/TelegramBots/TelegramListener/Dockerfile
+            context: services/TelegramBots/TelegramListener
+            repository: ChaimShlez/TeleNews/TelegramBots/TelegramListener
+          - name: TelegramSend
+            dockerfile: services/TelegramBots/TelegramSend/Dockerfile
+            context: services/TelegramBots/TelegramSend
+            repository: ChaimShlez/TeleNews/TelegramBots/TelegramSend
 
     steps:
       - name: Checkout repository
