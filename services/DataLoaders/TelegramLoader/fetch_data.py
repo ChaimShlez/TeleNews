@@ -14,7 +14,7 @@ class TelegramHandler:
     def __init__(self):
         self.api_id = API_ID
         self.api_hash = API_HASH
-        logger.info("Initializing Telegram client")
+        # logger.info("Initializing Telegram client")
         self.client = TelegramClient("my_session", self.api_id, self.api_hash)
         self.producer = Producer()
         self.redis_service = RedisService(REDIS_HOST, int(os.getenv("REDIS_PORT", 6379)))
@@ -92,3 +92,6 @@ class TelegramHandler:
 
         self.client.start()
         self.client.run_until_disconnected()
+
+
+print("sdalksvjfh")

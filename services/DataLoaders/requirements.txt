@@ -3,3 +3,4 @@ kafka
 elasticsearch==8.15.0
 redis
 pymongo
+python-dotenv==1.0.1
