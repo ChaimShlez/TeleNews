@@ -93,7 +93,7 @@ services:
   dataloader:
     build:
       context: ../../
-      dockerfile: services/DataLoaders/Dockerfile
+      dockerfile: services/DataLoaders/TelegramLoader/Dockerfile
     container_name: dataloaders
     environment:
       - API_ID=${API_ID}
@@ -167,7 +167,7 @@ services:
   telegram_bots_sender:
     build:
       context: ../../
-      dockerfile: services/TelegramBots/TelegramSend/Dockerfile
+      dockerfile: services/TelegramBots/Dockerfile
     container_name: telegram_bots_sender
     environment:
       - ES_HOST=http://elasticsearch:9200
