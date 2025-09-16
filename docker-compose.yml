@@ -110,7 +110,7 @@ services:
       - kafka
       - elasticsearch
       - redis
-      - mongo
+      - mongodb
     networks:
       - TeleNewsProject
 
