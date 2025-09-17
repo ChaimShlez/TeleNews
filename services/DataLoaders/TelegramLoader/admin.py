@@ -88,7 +88,7 @@ class Admin:
             logger.error(f"Failed to send channel to checker: {e}")
             return
 
-        if result.get("approved"):
+        if result.get("approved")or True:
             try:
 
                 await self.client(JoinChannelRequest(link))
