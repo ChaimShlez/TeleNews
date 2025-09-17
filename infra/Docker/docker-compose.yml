@@ -95,7 +95,8 @@ services:
       context: ../..
       dockerfile: services/DataLoaders/Dockerfile
 
- 
+    stdin_open: true
+    tty: true
     container_name: dataloaders
     environment:
       - API_ID=${API_ID}
@@ -114,6 +115,8 @@ services:
       elasticsearch:
         condition: service_healthy
 
+    volumes:
+      - telegram_sessions:/app/services/DataLoaders/TelegramLoader/sessions
 
     networks:
       - TeleNewsProject
@@ -186,18 +189,18 @@ services:
     networks:
       - TeleNewsProject
 
-  telegram_bots_sender:
-    build:
-      context: ../../
-      dockerfile: services/TelegramBots/Dockerfile
-    container_name: telegram_bots_sender
-    environment:
-      - ES_HOST=http://elasticsearch:9200
-      - INDEX_LOG=telegram_bots_sender
-    depends_on:
-      - elasticsearch
-    networks:
-      - TeleNewsProject
+#  telegram_bots_sender:
+#    build:
+#      context: ../../
+#      dockerfile: services/TelegramBots/Dockerfile
+#    container_name: telegram_bots_sender
+#    environment:
+#      - ES_HOST=http://elasticsearch:9200
+#      - INDEX_LOG=telegram_bots_sender
+#    depends_on:
+#      - elasticsearch
+#    networks:
+#      - TeleNewsProject
 
   manager_message:
     build:
@@ -224,20 +227,20 @@ services:
 
 
 
-  checker:
-    build:
-      context: ../../
-      dockerfile: services/CheckerService/Dockerfile
-    container_name: checker
-    environment:
-      - API_ID=${API_ID}
-      - API_HASH=${API_HASH}
-      - TOPIC_SUB=text-telegram
-      - ES_HOST=http://elasticsearch:9200
-      - INDEX_LOG=checker
-    depends_on:
-      - kafka
-      - elasticsearch
+#  checker:
+#    build:
+#      context: ../../
+#      dockerfile: services/CheckerService/Dockerfile
+#    container_name: checker
+#    environment:
+#      - API_ID=${API_ID}
+#      - API_HASH=${API_HASH}
+#      - TOPIC_SUB=text-telegram
+#      - ES_HOST=http://elasticsearch:9200
+#      - INDEX_LOG=checker
+#    depends_on:
+#      - kafka
+#      - elasticsearch
 
 
 volumes:
@@ -245,6 +248,7 @@ volumes:
   elasticsearch_data:
   mongodb_data:
   redis_data:
+  telegram_sessions:
 
 networks:
   TeleNewsProject:

@@ -3,4 +3,5 @@ kafka-python
 requests
 pymongo
 redis
+requests
 

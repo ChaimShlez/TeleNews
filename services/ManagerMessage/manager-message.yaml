@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manager-message
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: manager-message
+  template:
+    metadata:
+      labels:
+        app: manager-message
+    spec:
+      containers:
+        - name: manager-message
+          image: chaim022/manager-message:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KAFKA_BROKER
+              value: "kafka:9092"
+            - name: CONNECTION
+              value: "mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin"
+            - name: DB_NAME
+              value: "TeleNews"
+            - name: COLLECTION
+              value: "users_preferences"
+            - name: URL
+              value: "http://telegram-bots-sender:8000/send_message"
+            - name: HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: ES_HOST
+              value: "http://elasticsearch:9200"
+            - name: INDEX_LOG
+              value: "manager_message"
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: manager-message
+spec:
+  selector:
+    app: manager-message
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP

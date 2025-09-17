@@ -2,6 +2,7 @@
 .env
 infra/Docker/.env
 !.env.example
+.env
 __pycache__
 .idea
 *.session

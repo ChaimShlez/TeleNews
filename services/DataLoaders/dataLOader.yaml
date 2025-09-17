@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dataloader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dataloader
+  template:
+    metadata:
+      labels:
+        app: dataloader
+    spec:
+      containers:
+        - name: dataloader
+
+          image: chaim022/dataloader:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: API_ID
+              valueFrom:
+                secretKeyRef:
+                  name: tele-news-secrets
+                  key: api-id
+            - name: API_HASH
+              valueFrom:
+                secretKeyRef:
+                  name: tele-news-secrets
+                  key: api-hash
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tele-news-secrets
+                  key: token
+            - name: CHECKER_URL
+              value: "http://checker:8001/check"
+            - name: KAFKA_BROKER
+              value: "kafka:9092"
+            - name: TOPIC
+              value: "text-telegram"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: CONNECTION_STRING
+              value: "mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin"
+            - name: ES_HOST
+              value: "http://elasticsearch:9200"
+            - name: INDEX_LOG
+              value: "dataloader"
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dataloader
+spec:
+  selector:
+    app: dataloader
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
