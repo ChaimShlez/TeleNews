@@ -19,6 +19,7 @@ class Manager:
             doc_id = document['id']
             text = document['text']
             chat=document['chat']
+            text = f"{chat}: \n{text}"
             logger.info(f"message:{document}")
             translated_text = self.translator.translate_with_fallback(text)['translated_text']
             self.publisher(doc_id, translated_text,chat)

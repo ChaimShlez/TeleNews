@@ -240,6 +240,16 @@ class HebrewTranslator:
         """
         תרגום עם גיבוי מרובה
         """
+        if source_lang == 'auto':
+            source_lang = self.detect_language(text)
+        if source_lang == 'he':
+            return {
+                    'success': True,
+                    'translated_text': text,
+                    'source_language': source_lang,
+                    'confidence': None,
+                    'method': 'not method using'
+                }
         # רשימת השירותים לפי סדר עדיפות
         methods = [
             self.translate_mymemory,
@@ -260,6 +270,9 @@ class HebrewTranslator:
 
         return {
             'success': False,
+            'translated_text': text,
+            'source_language': source_lang,
+            'confidence': None,
             'error': 'כל השירותים נכשלו',
             'method': 'All methods failed'
         }
