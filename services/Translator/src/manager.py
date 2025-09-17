@@ -18,11 +18,13 @@ class Manager:
             document = message.value
             doc_id = document['id']
             text = document['text']
+            chat=document['chat']
+            logger.info(f"message:{document}")
             translated_text = self.translator.translate_with_fallback(text)['translated_text']
-            self.publisher(doc_id, translated_text)
+            self.publisher(doc_id, translated_text,chat)
 
-    def publisher(self, doc_id, text):
-        message = {'id': doc_id, 'text': text}
+    def publisher(self, doc_id, text,chat):
+        message = {'id': doc_id, 'text': text,"chat":chat}
         self.producer.publish_message(topic=self.topic_pub, message=message)
 
 

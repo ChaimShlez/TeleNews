@@ -35,9 +35,9 @@ if errorlevel 1 (
 
 REM Back to scriptes folder (where the .bat is)
 cd /d "%~dp0"
-
+oc login --token=sha256~oTRYp523ZYX2j6kPcux8EFSc1ysJ_JobVGnhmBVzyr8 --server=https://api.rm2.thpm.p1.openshiftapps.com:6443
 echo Deploying Kubernetes YAMLs...
-kubectl apply -f ../infra/open-shift
+oc apply -f ../infra/open-shift
 if errorlevel 1 (
     echo YAML deployment failed. Check YAML files.
     pause

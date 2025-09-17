@@ -9,10 +9,9 @@ import re
 from typing import Optional, Dict, List, Union
 import time
 from urllib.parse import quote
-# from utils.logger.logger import Logger
-import logging
-logger = logging
+from utils.logger.logger import Logger
 
+logger = Logger().get_logger()
 
 class HebrewTranslator:
     """
@@ -237,6 +236,7 @@ class HebrewTranslator:
         return parts if parts else [text]
 
     def translate_with_fallback(self, text: str, source_lang: str = 'auto') -> Dict:
+        logger.info(f'start translate: {text}')
         """
         תרגום עם גיבוי מרובה
         """

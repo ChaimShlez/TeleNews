@@ -80,27 +80,28 @@ class Admin:
             logger.info(f"Channel {link} already processed (approved or blacklisted)")
             return
 
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(CHECKER_URL, json={"link": link, "country": country})
-                result = response.json()
-        except Exception as e:
-            logger.error(f"Failed to send channel to checker: {e}")
-            return
+        # try:
+        #     async with httpx.AsyncClient() as client:
+        #         response = await client.post(CHECKER_URL, json={"link": link, "country": country})
+        #         result = response.json()
+        # except Exception as e:
+        #     logger.error(f"Failed to send channel to checker: {e}")
+        #     return
+        if True:
+               # if result.get("approved")or True:
 
-        if result.get("approved")or True:
-            try:
+               try:
 
-                await self.client(JoinChannelRequest(link))
-                logger.info(f"Subscribed to new approved channel: {link}")
+                   await self.client(JoinChannelRequest(link))
+                   logger.info(f"Subscribed to new approved channel: {link}")
 
-                self.add_channel_to_mongo(link, country)
+                   self.add_channel_to_mongo(link, country)
 
-            except Exception as e:
-                logger.error(f"Failed to subscribe to {link}: {e}")
-        else:
-            logger.info(f"Channel {link} was not approved by checker")
-            self.blacklist_channels(link, country)
+               except Exception as e:
+                   logger.error(f"Failed to subscribe to {link}: {e}")
+               else:
+                   logger.info(f"Channel {link} was not approved by checker")
+                   self.blacklist_channels(link, country)
 
     async def check_new_channels(self):
 

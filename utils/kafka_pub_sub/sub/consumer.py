@@ -11,7 +11,7 @@ class Consumer:
         logger.info('Consumer init')
         logger.info("kafka_broker_topic: {}".format(*topic))
         kafka_broker = os.getenv("KAFKA_BROKER", "localhost:9092")
-        logger.info("kafka consumer connected")
+        logger.info(f"kafka consumer connected {topic}")
         self.consumer = KafkaConsumer(
             *topic,
             group_id="telegram",

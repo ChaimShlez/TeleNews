@@ -11,4 +11,4 @@ COPY utils/elastic /app/utils/elastic
 COPY utils/logger /app/utils/logger
 COPY utils/topics /app/utils/topics
 
-CMD ["python", "-m" , "services.TelegramBots.TelegramSend.src.main"]
+CMD ["uvicorn", "services.TelegramBots.TelegramSend.src.main:app", "--host", "0.0.0.0", "--port", "8000"]

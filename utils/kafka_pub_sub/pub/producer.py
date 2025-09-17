@@ -23,8 +23,8 @@ class Producer:
                 )
                 logger.info("Connected to Kafka!")
                 break
-            except NoBrokersAvailable:
-                logger.info("Kafka broker not ready yet, waiting...")
+            except Exception as e:
+                logger.info(f"Kafka broker not ready yet, waiting...{e}")
                 time.sleep(2)
 
     def publish_message(self, topic, message):

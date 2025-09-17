@@ -132,8 +132,11 @@ services:
     environment:
       - KAFKA_BROKER=kafka:9092
       - TOPIC_SUB=text-telegram
+
       - TOPIC_PUB=text-telegram-translated
       - ES_HOST=elasticsearch
+      - INDEX_LOG=translator
+
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -183,6 +186,9 @@ services:
       - CONNECTION_STRING=mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin
       - ES_HOST=elasticsearch
       - INDEX_LOG=telegram_send
+    ports:
+      - 8000:8000
+
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -214,8 +220,8 @@ services:
       - CONNECTION=mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin
       - DB_NAME=TeleNews
       - COLLECTION=users_preferences
-      - URL=http://telegram_bots_sender:8000/send_message
-      - HOST=redis
+      - URL=http://telegram_send:8000/send
+      - REDIS_HOST=redis
       - REDIS_PORT=6379
       - ES_HOST=elasticsearch
       - INDEX_LOG=manager_message

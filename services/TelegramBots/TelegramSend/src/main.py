@@ -6,6 +6,10 @@ import uvicorn
 import os
 import io
 
+from utils.logger.logger import Logger
+
+logger = Logger.get_logger()
+
 TOKEN = TOKEN_BOT
 bot = Bot(token=TOKEN)
 
@@ -14,6 +18,8 @@ app = FastAPI()
 @app.post("/send")
 async def send_message(
     message: str = Form(...),
+
+
     users_id: List[str] = Form(...),  
     file: UploadFile = File(None)
 
@@ -47,6 +53,7 @@ async def send_message(
                 else:
                     await bot.send_document(chat_id=int(user_id), document=file_obj, caption=message)
             else:
+                logger.info(f"message{message}")
                 await bot.send_message(chat_id=int(user_id), text=message)
 
         except Exception as e:
@@ -60,6 +67,6 @@ async def send_message(
     return {"status": "sent", "count": len(users_id)}
 
 
-if __name__ == "__main__":
-   
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+# if __name__ == "__main__":
+#
+#     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

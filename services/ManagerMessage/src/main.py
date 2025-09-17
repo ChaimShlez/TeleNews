@@ -3,7 +3,7 @@ from services.ManagerMessage.src.config import *
 from utils.topics.topics import *
 
 topics = [v for k, v in TOPICS.items()]
-consumer = ConsumerManager(*topics, connection=CONNECTION, db_name=DB_NAME, collection=COLLECTION, url=URL, host=HOST, port=REDIS_PORT)
+consumer = ConsumerManager(*topics, connection=CONNECTION, db_name=DB_NAME, collection=COLLECTION, url=URL, host=REDIS_HOST, port=REDIS_PORT)
 
 
 def main():
