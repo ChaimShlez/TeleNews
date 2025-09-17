@@ -1,42 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: translator
+  name: classifier
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: translator
+      app: classifier
   template:
     metadata:
       labels:
-        app: translator
+        app: classifier
     spec:
       containers:
-        - name: translator
-          image: chaim022/translator:latest
+        - name: classifier
+          image: shuki120/classifier:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: KAFKA_BROKER
               value: "kafka:9092"
             - name: TOPIC_SUB
-              value: "text-telegram"
-            - name: TOPIC_PUB
               value: "text-telegram-translated"
             - name: ES_HOST
               value: "http://elasticsearch:9200"
             - name: INDEX_LOG
-              value: "translator"
+              value: "classifier"
           ports:
             - containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: translator
+  name: classifier
 spec:
   selector:
-    app: translator
+    app: classifier
   ports:
     - name: http
       protocol: TCP

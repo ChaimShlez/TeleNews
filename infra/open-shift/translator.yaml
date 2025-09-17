@@ -1,36 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: telegram-bots-sender
+  name: translator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: telegram-bots-sender
+      app: translator
   template:
     metadata:
       labels:
-        app: telegram-bots-sender
+        app: translator
     spec:
       containers:
-        - name: telegram-bots-sender
-          image: chaim022/telegram-bots-sender:latest
+        - name: translator
+          image: shuki120/translator:latest
           imagePullPolicy: IfNotPresent
           env:
+            - name: KAFKA_BROKER
+              value: "kafka:9092"
+            - name: TOPIC_SUB
+              value: "text-telegram"
+            - name: TOPIC_PUB
+              value: "text-telegram-translated"
             - name: ES_HOST
               value: "http://elasticsearch:9200"
             - name: INDEX_LOG
-              value: "telegram_bots_sender"
+              value: "translator"
           ports:
             - containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: telegram-bots-sender
+  name: translator
 spec:
   selector:
-    app: telegram-bots-sender
+    app: translator
   ports:
     - name: http
       protocol: TCP

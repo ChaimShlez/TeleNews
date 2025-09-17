@@ -1,40 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: classifier
+  name: telegram-bots-listener
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: classifier
+      app: telegram-bots-listener
   template:
     metadata:
       labels:
-        app: classifier
+        app: telegram-bots-listener
     spec:
       containers:
-        - name: classifier
-          image: chaim022/classifier:latest
+        - name: telegram-bots-listener
+          image: shuki120/telegram-bots-listener:latest
           imagePullPolicy: IfNotPresent
           env:
-            - name: KAFKA_BROKER
-              value: "kafka:9092"
-            - name: TOPIC_SUB
-              value: "text-telegram-translated"
+            - name: CONNECTION_STRING
+              value: "mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin"
             - name: ES_HOST
               value: "http://elasticsearch:9200"
             - name: INDEX_LOG
-              value: "classifier"
+              value: "telegram_bots"
           ports:
             - containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: classifier
+  name: telegram-bots-listener
 spec:
   selector:
-    app: classifier
+    app: telegram-bots-listener
   ports:
     - name: http
       protocol: TCP

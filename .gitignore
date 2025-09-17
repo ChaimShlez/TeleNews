@@ -1,7 +1,9 @@
 .venv
+.env
 infra/Docker/.env
 !.env.example
 .env
 __pycache__
 .idea
 *.session
+infra/open-shift/tele-news-secrets.yaml

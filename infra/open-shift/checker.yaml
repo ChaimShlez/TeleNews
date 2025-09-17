@@ -14,19 +14,19 @@ spec:
     spec:
       containers:
         - name: checker
-          image: chaim022/checker:latest
+          image: shuki120/checker:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: API_ID
               valueFrom:
                 secretKeyRef:
                   name: tele-news-secrets
-                  key: api-id
+                  key: API_ID
             - name: API_HASH
               valueFrom:
                 secretKeyRef:
                   name: tele-news-secrets
-                  key: api-hash
+                  key: API_HASH
             - name: TOPIC_SUB
               value: "text-telegram"
             - name: ES_HOST
