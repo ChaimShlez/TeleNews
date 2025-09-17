@@ -95,7 +95,8 @@ services:
       context: ../..
       dockerfile: services/DataLoaders/Dockerfile
 
- 
+    stdin_open: true
+    tty: true
     container_name: dataloaders
     environment:
       - API_ID=${API_ID}
@@ -114,6 +115,8 @@ services:
       elasticsearch:
         condition: service_healthy
 
+    volumes:
+      - telegram_sessions:/app/services/DataLoaders/TelegramLoader/sessions
 
     networks:
       - TeleNewsProject
@@ -245,6 +248,7 @@ volumes:
   elasticsearch_data:
   mongodb_data:
   redis_data:
+  telegram_sessions:
 
 networks:
   TeleNewsProject:
