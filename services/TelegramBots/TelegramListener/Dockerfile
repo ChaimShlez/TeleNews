@@ -10,7 +10,6 @@ COPY services/TelegramBots/TelegramListener /app/services/TelegramBots/TelegramL
 COPY utils/elastic /app/utils/elastic
 COPY utils/logger /app/utils/logger
 COPY utils/topics /app/utils/topics
-COPY utils/topics /app/utils/topics
 COPY utils/mongodb /app/utils/mongodb
 
 

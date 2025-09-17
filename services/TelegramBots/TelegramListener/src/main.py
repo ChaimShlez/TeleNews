@@ -1,6 +1,6 @@
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ConversationHandler, ContextTypes, filters
-from config import *
+from services.TelegramBots.TelegramListener.src.config import *
 from utils.topics.topics import TOPICS
 from utils.mongodb.mongodb_service import MongoDBService
 
