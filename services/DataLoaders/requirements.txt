@@ -5,3 +5,4 @@ redis
 pymongo
 dotenv
 httpx
+python-dotenv==1.0.1
