@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: manager-message
-          image: chaim022/manager-message:latest
+          image: shuki120/manager-message:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: KAFKA_BROKER

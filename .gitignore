@@ -6,3 +6,4 @@ infra/Docker/.env
 __pycache__
 .idea
 *.session
+infra/open-shift/tele-news-secrets.yaml

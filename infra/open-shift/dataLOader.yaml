@@ -14,25 +14,24 @@ spec:
     spec:
       containers:
         - name: dataloader
-
-          image: chaim022/dataloader:latest
+          image: shuki120/dataloader:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: API_ID
               valueFrom:
                 secretKeyRef:
                   name: tele-news-secrets
-                  key: api-id
+                  key: API_ID
             - name: API_HASH
               valueFrom:
                 secretKeyRef:
                   name: tele-news-secrets
-                  key: api-hash
+                  key: API_HASH
             - name: TOKEN
               valueFrom:
                 secretKeyRef:
                   name: tele-news-secrets
-                  key: token
+                  key: TOKEN
             - name: CHECKER_URL
               value: "http://checker:8001/check"
             - name: KAFKA_BROKER
