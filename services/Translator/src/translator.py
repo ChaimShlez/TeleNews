@@ -9,9 +9,9 @@ import re
 from typing import Optional, Dict, List, Union
 import time
 from urllib.parse import quote
-from utils.logger.logger import Logger
-
-logger = Logger().get_logger()
+# from utils.logger.logger import Logger
+import logging
+logger = logging
 
 
 class HebrewTranslator:
@@ -72,7 +72,7 @@ class HebrewTranslator:
                     'method': 'MyMemory'
                 }
             else:
-                logger.error(f'translated text with mymemory error: {data.get('responseDetails', 'Unknown error')}')
+                logger.error(f"translated text with mymemory error: {data.get('responseDetails', 'Unknown error')}")
                 return {
                     'success': False,
                     'error': data.get('responseDetails', 'Unknown error'),
@@ -115,7 +115,7 @@ class HebrewTranslator:
                     'method': 'LibreTranslate'
                 }
             else:
-                logger.error(f'translated text with LibreTranslate error: {result.get('error', 'Unknown error')}')
+                logger.error(f"translated text with LibreTranslate error: {result.get('error', 'Unknown error')}")
                 return {
                     'success': False,
                     'error': result.get('error', 'Unknown error'),

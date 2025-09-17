@@ -7,6 +7,7 @@ from services.CheckerService.src.check_channel import Check_channel
 app = FastAPI()
 checker = Check_channel()
 
+
 class ChannelData(BaseModel):
     link: str
     country: str = "unknown"
@@ -19,6 +20,8 @@ async def check_channel_endpoint(data: ChannelData):
 
 
 
-
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8001)
+
+    uvicorn.run(app, host="0.0.0.0", port=8001)
+
+

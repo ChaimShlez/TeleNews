@@ -18,7 +18,7 @@ class Manager:
             document = message.value
             doc_id = document['id']
             text = document['text']
-            translated_text = self.translator.translate_with_fallback(text)
+            translated_text = self.translator.translate_with_fallback(text)['translated_text']
             self.publisher(doc_id, translated_text)
 
     def publisher(self, doc_id, text):

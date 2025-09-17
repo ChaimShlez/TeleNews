@@ -1,4 +1,6 @@
 .venv
-.env
+infra/Docker/.env
+!.env.example
 __pycache__
 .idea
+*.session

@@ -1,24 +1,8 @@
-
-
 services:
-
-  
-  kafdrop:
-    image: obsidiandynamics/kafdrop
-    ports:
-      - "9000:9000"
-    environment:
-        KAFKA_BROKER_CONNECT: "kafka:9092"
-    depends_on:
-      - kafka
-    networks:
-      TeleNewsProject:
-# ------------------------------------------------------------------- 
   kafka:
     image: apache/kafka:latest
     container_name: kafka
     ports:
-      
       - "9092:9092"
     environment:
       KAFKA_NODE_ID: 1
@@ -31,29 +15,46 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true 
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+    volumes:
+      - kafka_data:/var/lib/kafka/data
     networks:
-      TeleNewsProject:
-# ------------------------------------------------------------------- 
+      - TeleNewsProject
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKER_CONNECT: "kafka:9092"
+    depends_on:
+      - kafka
+    networks:
+      - TeleNewsProject
+
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    image: elasticsearch:8.15.5
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-    ports:
-      - "9200:9200"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
-      TeleNewsProject:
-
+      - TeleNewsProject
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"' || curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"yellow\"'"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 60s 
-# ------------------------------------------------------------------- 
+
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.13.4
+    image: kibana:8.15.5
+    container_name: kibana
     ports:
       - "5601:5601"
     environment:
@@ -61,30 +62,194 @@ services:
     depends_on:
       - elasticsearch
     networks:
-      TeleNewsProject:
-# ------------------------------------------------------------------- 
+      - TeleNewsProject
+
   mongodb:
-    image: mongo:6.0
+    image: mongodb/mongodb-community-server:7.0-ubuntu2204
     container_name: mongo
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: TeleNews
-      MONGO_INITDB_ROOT_PASSWORD: "TeleNews"
+      MONGO_INITDB_ROOT_PASSWORD: TeleNews
       MONGO_INITDB_DATABASE: TeleNews
-    
-     
     restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
     networks:
-      TeleNewsProject:
+      - TeleNewsProject
 
-# ------------------------------------------------------------------- 
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - TeleNewsProject
+  
+  dataloader:
+    build:
+
+      context: ../..
+      dockerfile: services/DataLoaders/Dockerfile
+
+    stdin_open: true
+    tty: true
+    container_name: dataloaders
+    environment:
+      - API_ID=${API_ID}
+      - API_HASH=${API_HASH}
+      - TOKEN=${TOKEN}
+      - CHECKER_URL=http://checker:8001/check
+      - KAFKA_BROKER=kafka:9092
+      - TOPIC=text-telegram
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CONNECTION_STRING=mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin
+      - ES_HOST=elasticsearch
+      - INDEX_LOG=dataloader
+    depends_on:
+
+      elasticsearch:
+        condition: service_healthy
+
+    volumes:
+      - telegram_sessions:/app/services/DataLoaders/TelegramLoader/sessions
+
+    networks:
+      - TeleNewsProject
+
+  translator:
+    build:
+
+      context: ../..
+
+
+      dockerfile: services/Translator/Dockerfile
+    container_name: translator
+    environment:
+      - KAFKA_BROKER=kafka:9092
+      - TOPIC_SUB=text-telegram
+      - TOPIC_PUB=text-telegram-translated
+      - ES_HOST=elasticsearch
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - TeleNewsProject
+
+  classifier:
+    build:
+
+      context: ../..
+
+      dockerfile: services/Classifier/Dockerfile
+    container_name: classifier
+    environment:
+      - KAFKA_BROKER=kafka:9092
+      - TOPIC_SUB=text-telegram-translated
+      - ES_HOST=elasticsearch
+      - INDEX_LOG=classifier
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - TeleNewsProject
+
+  telegram_listener:
+    build:
+      context: ../..
+      dockerfile: services/TelegramBots/TelegramListener/Dockerfile
+    container_name: telegram_listener
+
+    environment:
+      - CONNECTION_STRING=mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin
+      - ES_HOST=elasticsearch
+      - INDEX_LOG=telegram_listener
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - TeleNewsProject
+
+  telegram_send:
+    build:
+      context: ../..
+      dockerfile: services/TelegramBots/TelegramSend/Dockerfile
+    container_name: telegram_send
+    environment:
+      - CONNECTION_STRING=mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin
+      - ES_HOST=elasticsearch
+      - INDEX_LOG=telegram_send
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - TeleNewsProject
+
+#  telegram_bots_sender:
+#    build:
+#      context: ../../
+#      dockerfile: services/TelegramBots/Dockerfile
+#    container_name: telegram_bots_sender
+#    environment:
+#      - ES_HOST=http://elasticsearch:9200
+#      - INDEX_LOG=telegram_bots_sender
+#    depends_on:
+#      - elasticsearch
+#    networks:
+#      - TeleNewsProject
+
+  manager_message:
+    build:
+
+      context: ../..
+
+      dockerfile: services/ManagerMessage/Dockerfile
+    container_name: manager_message
+    environment:
+      - KAFKA_BROKER=kafka:9092
+      - CONNECTION=mongodb://TeleNews:TeleNews@mongo:27017?authSource=admin
+      - DB_NAME=TeleNews
+      - COLLECTION=users_preferences
+      - URL=http://telegram_bots_sender:8000/send_message
+      - HOST=redis
+      - REDIS_PORT=6379
+      - ES_HOST=elasticsearch
+      - INDEX_LOG=manager_message
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - TeleNewsProject
 
 
 
+#  checker:
+#    build:
+#      context: ../../
+#      dockerfile: services/CheckerService/Dockerfile
+#    container_name: checker
+#    environment:
+#      - API_ID=${API_ID}
+#      - API_HASH=${API_HASH}
+#      - TOPIC_SUB=text-telegram
+#      - ES_HOST=http://elasticsearch:9200
+#      - INDEX_LOG=checker
+#    depends_on:
+#      - kafka
+#      - elasticsearch
 
 
+volumes:
+  kafka_data:
+  elasticsearch_data:
+  mongodb_data:
+  redis_data:
+  telegram_sessions:
 
 networks:
-  
   TeleNewsProject:
+    driver: bridge
