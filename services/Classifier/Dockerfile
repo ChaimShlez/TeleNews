@@ -6,6 +6,7 @@ COPY services/Classifier/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+
 COPY services/Classifier /app/services/Classifier
 COPY utils/kafka_pub_sub/pub /app/utils/kafka_pub_sub/pub
 COPY utils/kafka_pub_sub/sub /app/utils/kafka_pub_sub/sub
