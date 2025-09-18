@@ -20,7 +20,7 @@ async def send_message(
     message: str = Form(...),
 
 
-    users_id: List[str] = Form(...),  
+    users_id: List[str] = Form(...),
     file: UploadFile = File(None)
 
 ):
@@ -49,6 +49,8 @@ async def send_message(
                 elif ext in ['.mp3', '.wav']:
                     await bot.send_audio(chat_id=int(user_id), audio=file_obj, caption=message)
                 elif ext in ['.mp4']:
+                    logger.info(f"message{message}")
+
                     await bot.send_video(chat_id=int(user_id), video=file_obj, caption=message)
                 else:
                     await bot.send_document(chat_id=int(user_id), document=file_obj, caption=message)

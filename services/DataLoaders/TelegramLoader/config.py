@@ -26,6 +26,9 @@ CHANNELS = [{"link":"https://t.me/amitsegal","country":"Israel"},
             {"link":"https://t.me/LaColombiaOscuraa","country":"Spain"},
             {"link":"https://t.me/MILITSIYA_UZB","country":"Uzbekistan"},
             {"link":"https://t.me/oa_channel","country":"Cambodia"},
+            {"link":"https://t.me/telenewsproject","country":"Israel"},
+            {"link":"https://t.me/gazaalannet","country":"gaza"},
+            {"link":"https://t.me/mehwaralmokawma","country":"lebanon"},
             {"link":"https://t.me/markuskrall_abb","country":"Germany"}]
 
 
@@ -35,3 +38,4 @@ DB_NAME = "TeleNews"
 ADMIN_COLLECTION = "admin_channels"
 CHECK_COLLECTION = "check_channels"
 BLACKLIST_COLLECTION = "blacklist_channels"
+
